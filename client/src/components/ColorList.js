@@ -11,11 +11,34 @@ const ColorList = ({ colors, updateColors }) => {
   console.log(colors);
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
+  const [addColor, setAddColor] = useState(initialColor);
+  const [rando, setRando]=useState("");
 
   const editColor = color => {
     setEditing(true);
     setColorToEdit(color);
   };
+
+  const addNewColor = e => {
+    e.preventDefault();
+    console.log(addColor);
+    axiosWithAuth().post("/colors", addColor)
+    .then(res => {
+      console.log(res);
+
+    })
+    .catch(err => console.log(err));
+
+    setAddColor(initialColor);
+  }
+
+  const randomColor = e => {
+    e.preventDefault();
+    const random = ('#'+(Math.random()*0xFFFFFF<<0).toString(16));
+    setRando(random);
+      console.log(rando);
+
+  }
 
   const saveEdit = e => {
     e.preventDefault();
@@ -96,8 +119,49 @@ const ColorList = ({ colors, updateColors }) => {
           </div>
         </form>
       )}
-      <div className="spacer" />
+
+{!editing && (
+      <div className="addColor">
+
+<div className="random">
+
+<h4> Random: {rando} </h4>
+
+<button onClick={randomColor}>Random Color</button>
+
+</div>
+        
       {/* stretch - build another form here to add a color */} 
+      <form onSubmit={addNewColor}>
+
+        <input 
+            type="text"
+            name="color"
+            placeholder="Color"
+            value={addColor.color}
+            onChange={e => setAddColor({...addColor,
+            color: e.target.value})}
+            />
+        <input  
+            type="text"
+            name="hex"
+            placeholder="Hex code #"
+            value={addColor.code.hex}
+            onChange={e => setAddColor({...addColor,
+              code: {hex: e.target.value}})}
+            />
+
+          <button type="submit">Add New Color</button>
+      </form> 
+
+      
+     
+      </div>
+
+      
+      ) }
+      <div className="spacer" />
+      
     </div>
   );
 };
